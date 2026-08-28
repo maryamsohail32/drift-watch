@@ -17,19 +17,44 @@ class DriftSentinel:
     def audit(self, df: pd.DataFrame):
         findings = []
         feature_specs = {f['name']: f for f in self.schema['features']}
-        
+        target_name = self.schema.get('target', {}).get('name')
+
         for col in df.columns:
             if col not in feature_specs:
-                if col == "normalized_amount" and "default_flag" in df.columns:
-                    findings.append(f"[CRITICAL] Target leakage detected on feature '{col}' derived from target.")
+                # Target leakage: unknown column derived from the target column
+                if target_name and target_name in df.columns and col != target_name:
+                    findings.append(
+                        f"[CRITICAL] Target leakage detected on feature '{col}' derived from target."
+                    )
                 continue
-                
+
             spec = feature_specs[col]
+
+            # Null check
             if not spec['allow_null'] and df[col].isnull().any():
                 findings.append(f"[HIGH] Disallowed nulls in column '{col}'.")
+
+            # Dtype check
+            expected_type = spec.get('type')
+            if expected_type == 'int' and not pd.api.types.is_integer_dtype(df[col]):
+                findings.append(
+                    f"[MEDIUM] dtype mismatch on '{col}': expected int, got {df[col].dtype}."
+                )
+            elif expected_type == 'float' and not pd.api.types.is_float_dtype(df[col]):
+                findings.append(
+                    f"[MEDIUM] dtype mismatch on '{col}': expected float, got {df[col].dtype}."
+                )
+
+            # Bounds checks (min and max)
+            if 'min' in spec and (df[col] < spec['min']).any():
+                findings.append(
+                    f"[HIGH] Out of bounds values detected in '{col}' below min {spec['min']}."
+                )
             if 'max' in spec and (df[col] > spec['max']).any():
-                findings.append(f"[HIGH] Out of bounds values detected in '{col}' exceeding max {spec['max']}.")
-                
+                findings.append(
+                    f"[HIGH] Out of bounds values detected in '{col}' exceeding max {spec['max']}."
+                )
+
         return findings
 
 if __name__ == "__main__":
