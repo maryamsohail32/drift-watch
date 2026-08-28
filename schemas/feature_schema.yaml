@@ -1,0 +1,25 @@
+version: "1.0"
+dataset_name: "credit_risk_pipeline"
+features:
+  - name: "account_age_months"
+    type: "int"
+    min: 0
+    max: 600
+    allow_null: false
+
+  - name: "transaction_amount_usd"
+    type: "float"
+    min: 0.01
+    max: 50000.00
+    allow_null: false
+
+  - name: "credit_score"
+    type: "int"
+    min: 300
+    max: 850
+    allow_null: false
+
+target:
+  name: "default_flag"
+  type: "binary"
+  allowed_values: [0, 1]
