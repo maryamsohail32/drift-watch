@@ -141,7 +141,14 @@ Session logs, agent execution screenshots, and token consumption metrics generat
 * **Multi-Model Support**: Scale schema verification to handle multi-modal inputs and complex multi-model inference DAGs.
 
 ---
-
+## 🔌 How This Would Work in Production
+ 
+This hackathon prototype demonstrates the core sentinel logic end-to-end on a representative credit-risk pipeline. To adopt Drift Watch on a real pipeline, a team would:
+ 
+1. **Define a schema contract**: Write a `feature_schema.yaml` describing their own pipeline's features — expected types, `min`/`max` bounds, nullability, and which column is the prediction target.
+2. **Integrate sentinel calls**: Import `DriftSentinel` into their existing pipeline code and invoke it at the preprocessing checkpoint, passing in their actual DataFrame rather than the demo dataset.
+3. **Wire up remediation**: Connect the 1-click remediation flow to their own codebase so Bob-generated patches apply to the real pipeline files, not the sample `ml_pipeline.py`.
+The current build proves the detection and remediation logic works; generalizing it to any arbitrary pipeline without code changes (a fully plug-and-play integration) is the natural next engineering step, noted above under Future Work.
 ## 📁 Repository Blueprint
 
 ```text
