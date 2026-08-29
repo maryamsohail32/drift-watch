@@ -14,10 +14,34 @@ class DriftSentinel:
         with open(schema_path, 'r') as f:
             self.schema = yaml.safe_load(f)
 
+    def check_dynamic_leakage(self, df: pd.DataFrame, target_col: str = "default_flag", threshold: float = 0.85) -> list:
+        """
+        Dynamically identifies features with unexpectedly high linear correlation to the target variable.
+        """
+        if target_col not in df.columns:
+            return []
+        
+        numeric_df = df.select_dtypes(include=["number"])
+        if target_col not in numeric_df.columns:
+            return []
+            
+        correlations = numeric_df.corr()[target_col].abs()
+        suspicious_features = correlations[(correlations > threshold) & (correlations.index != target_col)]
+        
+        findings = []
+        for feature, corr_val in suspicious_features.items():
+            findings.append({
+                "feature": feature,
+                "rule": f"Dynamic Correlation Guard (corr = {corr_val:.2f})",
+                "severity": "CRITICAL",
+                "message": f"Feature '{feature}' shows extreme correlation ({corr_val:.2f}) with target label '{target_col}'."
+            })
+        return findings
+
     def audit(self, df: pd.DataFrame):
         findings = []
         feature_specs = {f['name']: f for f in self.schema['features']}
-        target_name = self.schema.get('target', {}).get('name')
+        target_name = self.schema.get('target', {}).get('name', 'default_flag')
 
         for col in df.columns:
             if col not in feature_specs:
@@ -54,6 +78,14 @@ class DriftSentinel:
                 findings.append(
                     f"[HIGH] Out of bounds values detected in '{col}' exceeding max {spec['max']}."
                 )
+
+        # Dynamic Correlation Check Integration
+        if target_name and target_name in df.columns:
+            dynamic_findings = self.check_dynamic_leakage(df, target_col=target_name)
+            for f in dynamic_findings:
+                formatted_msg = f"[{f['severity']}] {f['message']}"
+                if formatted_msg not in findings:
+                    findings.append(formatted_msg)
 
         return findings
 
