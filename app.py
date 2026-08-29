@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import time
 from src.drift_sentinel import DriftSentinel
 st.sidebar.image("assets/logo.png", width=120)
 # Page Configuration
@@ -200,3 +201,29 @@ df_clean["account_age_months"] = df_clean["account_age_months"].fillna(0).astype
 # ✅ Correct Transformation (Preserve Nulls or Explicit Asserted Imputation)
 df_clean["account_age_months"] = df_clean["account_age_months"].round().astype(int)
 """, language="python")
+
+
+# ---------------------------------------------------------
+# Streaming Micro-Batch Monitor (Future Work Visualizer)
+# ---------------------------------------------------------
+st.markdown("---")
+with st.expander("⚡ Live Streaming Micro-Batch Monitor (Experimental)"):
+    st.caption("Simulates real-time windowed drift monitoring across incoming data batches.")
+    if st.button("▶ Run Streaming Micro-Batch Simulation"):
+        chart_place = st.empty()
+        status_place = st.empty()
+        stream_data = []
+        
+        for batch_num in range(1, 6):
+            # Batches 1-3 healthy, Batch 4-5 degraded
+            health_score = 100 if batch_num < 4 else 30
+            stream_data.append({"Batch": f"Batch #{batch_num}", "Health Score": health_score})
+            
+            chart_place.line_chart(data=stream_data, x="Batch", y="Health Score")
+            
+            if batch_num < 4:
+                status_place.success(f"Ingesting Batch #{batch_num}... Pipeline Nominal (100%)")
+            else:
+                status_place.error(f"Ingesting Batch #{batch_num}... ⚠️ ALERT: Target Leakage & Drift Detected (30%)")
+            
+            time.sleep(0.7)
