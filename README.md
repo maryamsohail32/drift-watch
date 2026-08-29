@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="Drift Watch Logo" width="140" />
+<img src="assets/logo.png" alt="Drift Watch Logo" width="140" style="vertical-align: middle; border-radius: 8px;" />
 
 # 🛡️ DRIFT WATCH
 ### **Autonomous MLOps Sentinel & Silent Failure Audit Engine**
