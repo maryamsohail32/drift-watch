@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="Drift Watch Logo" width="140" style="vertical-align: middle; border-radius: 8px;" />
-
 # 🛡️ DRIFT WATCH
 ### **Autonomous MLOps Sentinel & Silent Failure Audit Engine**
 
@@ -114,6 +112,7 @@ Session logs, agent execution screenshots, and token consumption metrics generat
 
 * **Agent Directive Framework**: Configured via `.bob/rules-agent/AGENTS.md`, `.bob/rules-ask/AGENTS.md`, and `.bob/rules-plan/AGENTS.md`.
 * **Token Metrics**: `53.0k / 270.0k Tokens` recorded across workspace context initialization, audit engine synthesis, and unit test generation (`bob_sessions/bob_sessions_token_usage.png`).
+* **Required Task Session Summary**: Official Bob IDE task session summary (Task Id, Workspace, Bobcoins) captured per hackathon submission requirements (`bob_sessions/driftwatch_task01_init_summary.png`).
 * **Audit Session Output**: Complete subagent finding report saved in `bob_sessions/parallel_audit_results.md`.
 * **Pipeline Health Score**: Computed dynamically in `app.py` as `max(0, 100 - len(findings) * 35)`. With 2 unresolved critical findings pre-remediation, the score is `100 - (2 × 35) = 30%`; applying the Bob-generated patch clears the findings and restores the score to 100%.
 
@@ -154,6 +153,7 @@ drift-watch/
 │   ├── bob_subagents_execution.png
 │   ├── bob_subagents_leakage_trace.png
 │   ├── bob_sessions_token_usage.png
+│   ├── driftwatch_task01_init_summary.png
 │   └── parallel_audit_results.md
 ├── schemas/
 │   └── feature_schema.yaml     # Schema contract specification
