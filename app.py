@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from src.drift_sentinel import DriftSentinel
-st.sidebar.image("assets/logo.png", use_container_width=True)
+st.sidebar.image("assets/logo.png", width=120)
 # Page Configuration
 st.set_page_config(
     page_title="Drift Watch — MLOps Sentinel",
